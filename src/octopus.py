@@ -43,12 +43,24 @@ SIGNUP_TRIGGERS = {"🐙", "in", "In", "IN", "yes", "Yes", "YES"}
 # ══════════════════════════════════════════════════════════════════════════════
 
 def get_or_create_channel():
-    response = slack.conversations_list(types="public_channel", limit=200)
-    for ch in response["channels"]:
-        if ch["name"] == CHANNEL_NAME:
-            return ch["id"]
+    cursor = None
+    while True:
+        response = slack.conversations_list(
+            types="public_channel", limit=200, cursor=cursor
+        )
+        for ch in response["channels"]:
+            if ch["name"] == CHANNEL_NAME:
+                return ch["id"]
+        cursor = response.get("response_metadata", {}).get("next_cursor")
+        if not cursor:
+            break
 
-    response = slack.conversations_create(name=CHANNEL_NAME, is_private=False)
+    try:
+        response = slack.conversations_create(name=CHANNEL_NAME, is_private=False)
+    except SlackApiError as e:
+        if e.response["error"] == "name_taken":
+            return get_or_create_channel()
+        raise
     channel_id = response["channel"]["id"]
     slack.conversations_setTopic(
         channel=channel_id,
