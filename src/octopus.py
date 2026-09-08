@@ -274,12 +274,14 @@ def _update_post_with_signups(channel_id, state):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def close_window():
-    channel_id = get_or_create_channel()
+    poll()
+
     state = load_state()
 
     if not state["window_open"]:
         return   # already closed (hit max signups during the week)
 
+    channel_id = get_or_create_channel()
     state["window_open"] = False
     save_state(state)
 
