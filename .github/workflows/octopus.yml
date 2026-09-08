@@ -1,0 +1,79 @@
+name: Octopus 🐙
+
+on:
+  schedule:
+    # Poll every 5 minutes for new sign-ups
+    - cron: "*/5 * * * *"
+    # Monday 9am ET — post the weekly lunch offer
+    - cron: "0 14 * * 1"
+    # Tuesday 9am ET — close the window
+    - cron: "0 14 * * 2"
+
+  # Manual trigger from Actions tab
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Command: invite | poll | close"
+        required: true
+        default: "poll"
+
+jobs:
+  octopus:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: octopus
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install slack-sdk
+
+      - name: Determine command
+        id: cmd
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "command=${{ github.event.inputs.command }}" >> $GITHUB_OUTPUT
+          else
+            HOUR=$(date -u +%H)
+            MIN=$(date -u +%M)
+            DAY=$(date -u +%u)   # 1=Mon, 2=Tue
+
+            # Monday 9am ET (14:00 UTC) = invite
+            if [ "$DAY" = "1" ] && [ "$HOUR" = "14" ] && [ "$MIN" = "00" ]; then
+              echo "command=invite" >> $GITHUB_OUTPUT
+            # Tuesday 9am ET (14:00 UTC) = close
+            elif [ "$DAY" = "2" ] && [ "$HOUR" = "14" ] && [ "$MIN" = "00" ]; then
+              echo "command=close" >> $GITHUB_OUTPUT
+            # everything else = poll
+            else
+              echo "command=poll" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Run Octopus
+        env:
+          SLACK_BOT_TOKEN:      ${{ secrets.SLACK_BOT_TOKEN }}
+          PI_SLACK_USER_ID:     ${{ secrets.PI_SLACK_USER_ID }}
+          KATIE_SLACK_USER_ID:  ${{ secrets.KATIE_SLACK_USER_ID }}
+        run: |
+          cd src
+          python octopus.py ${{ steps.cmd.outputs.command }}
+
+      - name: Save state back to repo
+        run: |
+          git config user.name  "Octopus Bot"
+          git config user.email "octopus-bot@jazlab.mit.edu"
+          git add src/octopus_state.json
+          git diff --cached --quiet || git commit -m "chore: update octopus state [skip ci]"
+          git push
