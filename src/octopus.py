@@ -46,10 +46,15 @@ def get_or_create_channel():
     cursor = None
     while True:
         response = slack.conversations_list(
-            types="public_channel", limit=200, cursor=cursor
+            types="public_channel", limit=200, cursor=cursor,
+            exclude_archived=False,
         )
         for ch in response["channels"]:
             if ch["name"] == CHANNEL_NAME:
+                try:
+                    slack.conversations_join(channel=ch["id"])
+                except SlackApiError:
+                    pass
                 return ch["id"]
         cursor = response.get("response_metadata", {}).get("next_cursor")
         if not cursor:
