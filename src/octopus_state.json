@@ -1,7 +1,15 @@
 {
   "current_post_ts": "1788893208.935599",
-  "signups": [],
+  "signups": [
+    {
+      "user_id": "U01V6FFGHPZ",
+      "display_name": "Cheng Tang",
+      "ts": "1788893580.025189"
+    }
+  ],
   "monthly_lunchers": {},
-  "seen_ts": [],
+  "seen_ts": [
+    "1788893580.025189"
+  ],
   "window_open": true
 }
