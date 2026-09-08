@@ -93,6 +93,7 @@ def load_state():
             "monthly_lunchers":  {},     # {user_id: "YYYY-MM"}
             "seen_ts":           [],     # reply timestamps already processed
             "window_open":       False,
+            "history":           [],     # list of {date, members}
         }
 
 
@@ -317,6 +318,15 @@ def _confirm_match(channel_id, state):
     # mark all as lunched this month
     for s in signups:
         state["monthly_lunchers"][s["user_id"]] = current_month
+
+    # append to persistent history
+    if "history" not in state:
+        state["history"] = []
+    state["history"].append({
+        "date": datetime.utcnow().strftime("%Y-%m-%d"),
+        "members": [s["display_name"] for s in signups],
+    })
+
     save_state(state)
 
     # open a group DM with all participants
