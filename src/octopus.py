@@ -30,7 +30,7 @@ KATIE_SLACK_USER_ID = os.environ["KATIE_SLACK_USER_ID"]
 
 slack = WebClient(token=SLACK_BOT_TOKEN)
 
-CHANNEL_NAME  = "octopus"
+CHANNEL_NAME  = "octopus-lunch"
 MAX_SIGNUPS   = 3
 MIN_SIGNUPS   = 2
 LUNCH_BUDGET  = 20   # $ per person
@@ -43,11 +43,30 @@ SIGNUP_TRIGGERS = {"🐙", "in", "In", "IN", "yes", "Yes", "YES"}
 # ══════════════════════════════════════════════════════════════════════════════
 
 def get_or_create_channel():
+    try:
+        response = slack.conversations_create(name=CHANNEL_NAME, is_private=False)
+        channel_id = response["channel"]["id"]
+        slack.conversations_setTopic(
+            channel=channel_id,
+            topic="🐙 Octopus — weekly lab lunches. Sign up, show up, build bridges."
+        )
+        slack.conversations_setPurpose(
+            channel=channel_id,
+            purpose=(
+                "Every Monday, Octopus offers a funded lab lunch for 2-3 people. "
+                "Reply 🐙 to sign up. No agenda — just lunch and each other's work."
+            )
+        )
+        logger.info(f"Created #{CHANNEL_NAME}: {channel_id}")
+        return channel_id
+    except SlackApiError as e:
+        if e.response["error"] != "name_taken":
+            raise
+
     cursor = None
     while True:
         response = slack.conversations_list(
-            types="public_channel", limit=200, cursor=cursor,
-            exclude_archived=False,
+            types="public_channel", limit=1000, cursor=cursor,
         )
         for ch in response["channels"]:
             if ch["name"] == CHANNEL_NAME:
@@ -60,26 +79,7 @@ def get_or_create_channel():
         if not cursor:
             break
 
-    try:
-        response = slack.conversations_create(name=CHANNEL_NAME, is_private=False)
-    except SlackApiError as e:
-        if e.response["error"] == "name_taken":
-            return get_or_create_channel()
-        raise
-    channel_id = response["channel"]["id"]
-    slack.conversations_setTopic(
-        channel=channel_id,
-        topic="🐙 Octopus — weekly lab lunches. Sign up, show up, build bridges."
-    )
-    slack.conversations_setPurpose(
-        channel=channel_id,
-        purpose=(
-            "Every Monday, Octopus offers a funded lab lunch for 2-3 people. "
-            "Reply 🐙 to sign up. No agenda — just lunch and each other's work."
-        )
-    )
-    logger.info(f"Created #{CHANNEL_NAME}: {channel_id}")
-    return channel_id
+    raise RuntimeError(f"#{CHANNEL_NAME} exists but could not be found via API")
 
 
 def load_state():
