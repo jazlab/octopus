@@ -183,7 +183,9 @@ def poll():
         state["seen_ts"].append(ts)
 
         # check if it's a signup trigger
+        logger.info(f"Reply from {user_id}: text={text!r}")
         if text not in SIGNUP_TRIGGERS:
+            logger.info(f"  -> not a trigger (triggers: {SIGNUP_TRIGGERS})")
             continue
 
         # already signed up this week

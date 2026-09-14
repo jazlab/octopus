@@ -46,14 +46,14 @@ jobs:
             echo "command=${{ github.event.inputs.command }}" >> $GITHUB_OUTPUT
           else
             HOUR=$(date -u +%H)
-            MIN=$(date -u +%M)
             DAY=$(date -u +%u)   # 1=Mon, 2=Tue
 
-            # Monday 9am Boston (13:00 UTC) = invite
-            if [ "$DAY" = "1" ] && [ "$HOUR" = "13" ] && [ "$MIN" = "00" ]; then
+            # Monday 13-14 UTC (9-10am Boston) = invite
+            # Use hour range to tolerate GitHub Actions cron delay
+            if [ "$DAY" = "1" ] && [ "$HOUR" -ge 13 ] && [ "$HOUR" -le 14 ]; then
               echo "command=invite" >> $GITHUB_OUTPUT
-            # Tuesday 9am Boston (13:00 UTC) = close
-            elif [ "$DAY" = "2" ] && [ "$HOUR" = "13" ] && [ "$MIN" = "00" ]; then
+            # Tuesday 13-14 UTC (9-10am Boston) = close
+            elif [ "$DAY" = "2" ] && [ "$HOUR" -ge 13 ] && [ "$HOUR" -le 14 ]; then
               echo "command=close" >> $GITHUB_OUTPUT
             # everything else = poll
             else
