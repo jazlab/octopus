@@ -16,6 +16,8 @@ Commands (called by GitHub Actions):
 import os
 import json
 import logging
+import re
+import unicodedata
 from datetime import datetime, timedelta
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -35,7 +37,41 @@ MAX_SIGNUPS   = 3
 MIN_SIGNUPS   = 2
 LUNCH_BUDGET  = 20   # $ per person
 
-SIGNUP_TRIGGERS = {"🐙", "in", "In", "IN", "yes", "Yes", "YES"}
+# Normalized to lowercase; matching strips punctuation and whitespace.
+# The octopus emoji is checked separately (unicode variants).
+SIGNUP_WORDS = {"in", "yes", "i'm in", "im in", "me", "down"}
+SIGNUP_EMOJI = {"🐙"}  # U+1F419; Slack may send skin-tone or variant selectors
+
+
+def _is_signup(text: str) -> bool:
+    """Decide whether a Slack reply is a sign-up.
+
+    Handles common variations:
+      - Case and whitespace:  "In", " YES ", "I'm in"
+      - Trailing punctuation: "in!", "yes."
+      - Emoji variants:       octopus with variation selector / skin tone
+      - Slack rich-text:      ":octopus:" shortcode alongside the emoji
+    """
+    # Strip variation selectors / zero-width joiners that Slack sometimes appends
+    cleaned = "".join(
+        ch for ch in text
+        if unicodedata.category(ch) not in ("Mn", "Cf")  # marks, format chars
+    ).strip()
+
+    # Check for octopus emoji anywhere in the message
+    for emoji in SIGNUP_EMOJI:
+        if emoji in cleaned:
+            return True
+
+    # Slack may send the shortcode instead of the unicode char
+    if ":octopus:" in cleaned.lower():
+        return True
+
+    # Normalize: lowercase, strip punctuation, collapse whitespace
+    normalized = re.sub(r"[^\w\s']", "", cleaned.lower()).strip()
+    normalized = re.sub(r"\s+", " ", normalized)
+
+    return normalized in SIGNUP_WORDS
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -183,9 +219,7 @@ def poll():
         state["seen_ts"].append(ts)
 
         # check if it's a signup trigger
-        logger.info(f"Reply from {user_id}: text={text!r}")
-        if text not in SIGNUP_TRIGGERS:
-            logger.info(f"  -> not a trigger (triggers: {SIGNUP_TRIGGERS})")
+        if not _is_signup(text):
             continue
 
         # already signed up this week
