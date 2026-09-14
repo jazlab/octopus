@@ -5,12 +5,37 @@
       "user_id": "U01V6FFGHPZ",
       "display_name": "Cheng Tang",
       "ts": "1789403082.609489"
+    },
+    {
+      "user_id": "U05H71F1J3E",
+      "display_name": "Sol Markman",
+      "ts": "1789403646.426359"
+    },
+    {
+      "user_id": "W01BBRCFPV2",
+      "display_name": "Ruidong Chen",
+      "ts": "1789404121.787449"
     }
   ],
-  "monthly_lunchers": {},
+  "monthly_lunchers": {
+    "U01V6FFGHPZ": "2026-09",
+    "U05H71F1J3E": "2026-09",
+    "W01BBRCFPV2": "2026-09"
+  },
   "seen_ts": [
-    "1789403082.609489"
+    "1789403082.609489",
+    "1789403646.426359",
+    "1789404121.787449"
   ],
-  "window_open": true,
-  "history": []
+  "window_open": false,
+  "history": [
+    {
+      "date": "2026-09-14",
+      "members": [
+        "Cheng Tang",
+        "Sol Markman",
+        "Ruidong Chen"
+      ]
+    }
+  ]
 }
