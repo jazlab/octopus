@@ -121,10 +121,16 @@ def send_weekly_invitation():
     state["window_open"]     = True
     save_state(state)
 
+    # date strings for the message
+    today = datetime.utcnow() - timedelta(hours=4)  # approximate Boston time
+    monday_str = today.strftime("%b %-d")
+    tuesday = today + timedelta(days=1)
+    tuesday_str = tuesday.strftime("%b %-d")
+
     resp = slack.chat_postMessage(
         channel=channel_id,
         text=(
-            "*🐙 This week's Octopus lunch is open.*\n\n"
+            f"*🐙 This week's Octopus lunch is open ({monday_str}).*\n\n"
             "The lab is covering *$20 per person* for 2–3 people to have lunch "
             "together this week — wherever you want, whenever works for you.\n\n"
             "No agenda. Just show up, eat, and learn a little about what your "
@@ -132,7 +138,7 @@ def send_weekly_invitation():
             "Reply *🐙* or *in* to sign up. "
             "All names are visible so you can see who's already in "
             "before committing.\n\n"
-            "_Window closes Tuesday 9am. 3 spots — once they're filled, sign-ups close. "
+            f"_Window closes Tuesday ({tuesday_str}) 9am. 3 spots — once they're filled, sign-ups close. "
             "If you lunched this month, your spot opens again next month._"
         )
     )
@@ -247,12 +253,20 @@ def _update_post_with_signups(channel_id, state):
     names = " · ".join(s["display_name"] for s in state["signups"])
     remaining = MAX_SIGNUPS - len(state["signups"])
 
+    # date strings for the message
+    today = datetime.utcnow() - timedelta(hours=4)  # approximate Boston time
+    # find the Monday of this week
+    monday = today - timedelta(days=today.weekday())
+    monday_str = monday.strftime("%b %-d")
+    tuesday = monday + timedelta(days=1)
+    tuesday_str = tuesday.strftime("%b %-d")
+
     try:
         slack.chat_update(
             channel=channel_id,
             ts=state["current_post_ts"],
             text=(
-                "*🐙 This week's Octopus lunch is open.*\n\n"
+                f"*🐙 This week's Octopus lunch is open ({monday_str}).*\n\n"
                 "The lab is covering *$20 per person* for 2–3 people to have lunch "
                 "together this week — wherever you want, whenever works for you.\n\n"
                 "No agenda. Just show up, eat, and learn a little about what your "
@@ -262,7 +276,7 @@ def _update_post_with_signups(channel_id, state):
                 "before committing.\n\n"
                 f"*Already in:* {names}\n"
                 f"*Spots remaining:* {remaining}\n\n"
-                "_Window closes Tuesday 9am. 3 spots — once they're filled, sign-ups close. "
+                f"_Window closes Tuesday ({tuesday_str}) 9am. 3 spots — once they're filled, sign-ups close. "
                 "If you lunched this month, your spot opens again next month._"
             )
         )

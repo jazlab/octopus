@@ -4,10 +4,10 @@ on:
   schedule:
     # Poll every 5 minutes for new sign-ups
     - cron: "*/5 * * * *"
-    # Monday 9am ET — post the weekly lunch offer
-    - cron: "0 14 * * 1"
-    # Tuesday 9am ET — close the window
-    - cron: "0 14 * * 2"
+    # Monday 9am Boston (EDT, UTC-4) — post the weekly lunch offer
+    - cron: "0 13 * * 1"
+    # Tuesday 9am Boston (EDT, UTC-4) — close the window
+    - cron: "0 13 * * 2"
 
   # Manual trigger from Actions tab
   workflow_dispatch:
@@ -49,11 +49,11 @@ jobs:
             MIN=$(date -u +%M)
             DAY=$(date -u +%u)   # 1=Mon, 2=Tue
 
-            # Monday 9am ET (14:00 UTC) = invite
-            if [ "$DAY" = "1" ] && [ "$HOUR" = "14" ] && [ "$MIN" = "00" ]; then
+            # Monday 9am Boston (13:00 UTC) = invite
+            if [ "$DAY" = "1" ] && [ "$HOUR" = "13" ] && [ "$MIN" = "00" ]; then
               echo "command=invite" >> $GITHUB_OUTPUT
-            # Tuesday 9am ET (14:00 UTC) = close
-            elif [ "$DAY" = "2" ] && [ "$HOUR" = "14" ] && [ "$MIN" = "00" ]; then
+            # Tuesday 9am Boston (13:00 UTC) = close
+            elif [ "$DAY" = "2" ] && [ "$HOUR" = "13" ] && [ "$MIN" = "00" ]; then
               echo "command=close" >> $GITHUB_OUTPUT
             # everything else = poll
             else
