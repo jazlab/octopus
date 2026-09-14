@@ -2,20 +2,18 @@ name: Octopus 🐙
 
 on:
   schedule:
-    # Poll every 5 minutes for new sign-ups
-    - cron: "*/5 * * * *"
-    # Monday 9am Boston (EDT, UTC-4) — post the weekly lunch offer
-    - cron: "0 13 * * 1"
-    # Tuesday 9am Boston (EDT, UTC-4) — close the window
-    - cron: "0 13 * * 2"
+    # Poll hourly — GitHub throttles */5 to ~2-4h anyway.
+    # Invite/close are determined by Boston wall-clock time inside Python,
+    # so the cron only needs to run often enough to catch the 9am window.
+    - cron: "0 * * * *"
 
   # Manual trigger from Actions tab
   workflow_dispatch:
     inputs:
       command:
-        description: "Command: invite | poll | close"
+        description: "Command: auto | invite | poll | close"
         required: true
-        default: "poll"
+        default: "auto"
 
 jobs:
   octopus:
@@ -45,20 +43,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "command=${{ github.event.inputs.command }}" >> $GITHUB_OUTPUT
           else
-            HOUR=$(date -u +%H)
-            DAY=$(date -u +%u)   # 1=Mon, 2=Tue
-
-            # Monday 13-14 UTC (9-10am Boston) = invite
-            # Use hour range to tolerate GitHub Actions cron delay
-            if [ "$DAY" = "1" ] && [ "$HOUR" -ge 13 ] && [ "$HOUR" -le 14 ]; then
-              echo "command=invite" >> $GITHUB_OUTPUT
-            # Tuesday 13-14 UTC (9-10am Boston) = close
-            elif [ "$DAY" = "2" ] && [ "$HOUR" -ge 13 ] && [ "$HOUR" -le 14 ]; then
-              echo "command=close" >> $GITHUB_OUTPUT
-            # everything else = poll
-            else
-              echo "command=poll" >> $GITHUB_OUTPUT
-            fi
+            echo "command=auto" >> $GITHUB_OUTPUT
           fi
 
       - name: Run Octopus

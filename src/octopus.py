@@ -1,16 +1,16 @@
 """
 Octopus 🐙 — Jazlab's weekly lunch pairing system.
 
-Every Monday, Octopus posts a lunch offer in #octopus.
+Every Monday, Octopus posts a lunch offer in #octopus-lunch.
 Lab members reply "🐙" or "in" to sign up.
 First 3 to sign up get a funded lunch together ($20/person).
-The bot polls Slack every 5 minutes for replies.
+All times are Boston (America/New_York), handling EDT/EST automatically.
 
 Commands (called by GitHub Actions):
-  invite  — Monday 9am: post the weekly lunch offer
-  poll    — Every 5 min: check for new sign-ups, enforce rules
-  close   — Tuesday 9am: close the window, confirm or quietly drop
-  nudge   — (future) follow-up nudge if they haven't lunched yet
+  auto    — Default: decide invite/poll/close from Boston wall-clock time
+  invite  — Post the weekly lunch offer
+  poll    — Check for new sign-ups, enforce rules
+  close   — Close the window, confirm or quietly drop
 """
 
 import os
@@ -19,6 +19,7 @@ import logging
 import re
 import unicodedata
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
@@ -32,7 +33,8 @@ KATIE_SLACK_USER_ID = os.environ["KATIE_SLACK_USER_ID"]
 
 slack = WebClient(token=SLACK_BOT_TOKEN)
 
-CHANNEL_NAME  = "octopus-lunch"
+BOSTON_TZ      = ZoneInfo("America/New_York")
+CHANNEL_NAME   = "octopus-lunch"
 MAX_SIGNUPS   = 3
 MIN_SIGNUPS   = 2
 LUNCH_BUDGET  = 20   # $ per person
@@ -144,7 +146,7 @@ def get_display_name(user_id):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 1 — WEEKLY INVITATION  (Monday 9am ET)
+# STEP 1 — WEEKLY INVITATION  (Monday 9am Boston)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def send_weekly_invitation():
@@ -157,8 +159,8 @@ def send_weekly_invitation():
     state["window_open"]     = True
     save_state(state)
 
-    # date strings for the message
-    today = datetime.utcnow() - timedelta(hours=4)  # approximate Boston time
+    # date strings for the message (Boston time, handles EDT/EST automatically)
+    today = datetime.now(BOSTON_TZ)
     monday_str = today.strftime("%b %-d")
     tuesday = today + timedelta(days=1)
     tuesday_str = tuesday.strftime("%b %-d")
@@ -184,7 +186,7 @@ def send_weekly_invitation():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 2 — POLL  (every 5 minutes)
+# STEP 2 — POLL  (hourly, or on demand)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def poll():
@@ -204,7 +206,7 @@ def poll():
         logger.error(f"Error fetching replies: {e}")
         return
 
-    current_month = datetime.utcnow().strftime("%Y-%m")
+    current_month = datetime.now(BOSTON_TZ).strftime("%Y-%m")
 
     for msg in replies["messages"][1:]:   # skip original post
         ts      = msg.get("ts")
@@ -289,8 +291,8 @@ def _update_post_with_signups(channel_id, state):
     names = " · ".join(s["display_name"] for s in state["signups"])
     remaining = MAX_SIGNUPS - len(state["signups"])
 
-    # date strings for the message
-    today = datetime.utcnow() - timedelta(hours=4)  # approximate Boston time
+    # date strings for the message (Boston time, handles EDT/EST automatically)
+    today = datetime.now(BOSTON_TZ)
     # find the Monday of this week
     monday = today - timedelta(days=today.weekday())
     monday_str = monday.strftime("%b %-d")
@@ -321,7 +323,7 @@ def _update_post_with_signups(channel_id, state):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 3 — CLOSE  (Tuesday 9am ET)
+# STEP 3 — CLOSE  (Tuesday 9am Boston)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def close_window():
@@ -361,7 +363,7 @@ def close_window():
 
 def _confirm_match(channel_id, state):
     signups      = state["signups"]
-    current_month = datetime.utcnow().strftime("%Y-%m")
+    current_month = datetime.now(BOSTON_TZ).strftime("%Y-%m")
     names        = ", ".join(s["display_name"] for s in signups)
     user_ids     = [s["user_id"] for s in signups]
 
@@ -373,7 +375,7 @@ def _confirm_match(channel_id, state):
     if "history" not in state:
         state["history"] = []
     state["history"].append({
-        "date": datetime.utcnow().strftime("%Y-%m-%d"),
+        "date": datetime.now(BOSTON_TZ).strftime("%Y-%m-%d"),
         "members": [s["display_name"] for s in signups],
     })
 
@@ -414,12 +416,39 @@ def _confirm_match(channel_id, state):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# AUTO — decide command from Boston wall-clock time
+# ══════════════════════════════════════════════════════════════════════════════
+
+def auto():
+    """Pick the right command based on Boston time.
+
+    Monday  9-10am → invite  (1-hour window tolerates cron jitter)
+    Tuesday 9-10am → close
+    Everything else → poll
+    """
+    now = datetime.now(BOSTON_TZ)
+    day = now.weekday()   # 0=Mon, 1=Tue
+    hour = now.hour
+
+    if day == 0 and 9 <= hour < 10:
+        logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → invite")
+        send_weekly_invitation()
+    elif day == 1 and 9 <= hour < 10:
+        logger.info(f"Auto: Tuesday {now.strftime('%I:%M %p %Z')} → close")
+        close_window()
+    else:
+        logger.info(f"Auto: {now.strftime('%A %I:%M %p %Z')} → poll")
+        poll()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # ENTRY POINTS
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     import sys
     commands = {
+        "auto":   auto,
         "invite": send_weekly_invitation,
         "poll":   poll,
         "close":  close_window,
