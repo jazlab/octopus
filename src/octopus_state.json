@@ -1,6 +1,12 @@
 {
   "current_post_ts": "1790016010.789599",
-  "signups": [],
+  "signups": [
+    {
+      "user_id": "U07BC3HK63T",
+      "display_name": "Zoe Boundy-Singer",
+      "ts": "1790016118.271149"
+    }
+  ],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
@@ -9,7 +15,8 @@
   "seen_ts": [
     "1789403082.609489",
     "1789403646.426359",
-    "1789404121.787449"
+    "1789404121.787449",
+    "1790016118.271149"
   ],
   "window_open": true,
   "history": [
