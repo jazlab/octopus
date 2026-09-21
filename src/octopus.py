@@ -422,18 +422,23 @@ def _confirm_match(channel_id, state):
 def auto():
     """Pick the right command based on Boston time.
 
-    Monday  9-10am → invite  (1-hour window tolerates cron jitter)
-    Tuesday 9-10am → close
+    Monday  8am-4pm → invite (wide window; state guard prevents double-invite)
+    Tuesday 8am-4pm → close
     Everything else → poll
     """
     now = datetime.now(BOSTON_TZ)
     day = now.weekday()   # 0=Mon, 1=Tue
     hour = now.hour
+    state = load_state()
 
-    if day == 0 and 9 <= hour < 10:
-        logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → invite")
-        send_weekly_invitation()
-    elif day == 1 and 9 <= hour < 10:
+    if day == 0 and 8 <= hour < 16:
+        if state["window_open"] or state["current_post_ts"]:
+            logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → already invited, poll")
+            poll()
+        else:
+            logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → invite")
+            send_weekly_invitation()
+    elif day == 1 and 8 <= hour < 16:
         logger.info(f"Auto: Tuesday {now.strftime('%I:%M %p %Z')} → close")
         close_window()
     else:
