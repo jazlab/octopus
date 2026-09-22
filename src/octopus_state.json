@@ -5,20 +5,35 @@
       "user_id": "U07BC3HK63T",
       "display_name": "Zoe Boundy-Singer",
       "ts": "1790016118.271149"
+    },
+    {
+      "user_id": "U0B42B2MRCP",
+      "display_name": "Srinidhi Naidu",
+      "ts": "1790079250.182579"
+    },
+    {
+      "user_id": "U0BMHCPCL1M",
+      "display_name": "Braden Yuille",
+      "ts": "1790079252.101579"
     }
   ],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
-    "W01BBRCFPV2": "2026-09"
+    "W01BBRCFPV2": "2026-09",
+    "U07BC3HK63T": "2026-09",
+    "U0B42B2MRCP": "2026-09",
+    "U0BMHCPCL1M": "2026-09"
   },
   "seen_ts": [
     "1789403082.609489",
     "1789403646.426359",
     "1789404121.787449",
-    "1790016118.271149"
+    "1790016118.271149",
+    "1790079250.182579",
+    "1790079252.101579"
   ],
-  "window_open": true,
+  "window_open": false,
   "history": [
     {
       "date": "2026-09-14",
@@ -26,6 +41,14 @@
         "Cheng Tang",
         "Sol Markman",
         "Ruidong Chen"
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "members": [
+        "Zoe Boundy-Singer",
+        "Srinidhi Naidu",
+        "Braden Yuille"
       ]
     }
   ]
