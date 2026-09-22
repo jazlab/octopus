@@ -154,9 +154,10 @@ def send_weekly_invitation():
     state = load_state()
 
     # reset for the new week
-    state["current_post_ts"] = None
-    state["signups"]         = []
-    state["window_open"]     = True
+    state["current_post_ts"]  = None
+    state["signups"]          = []
+    state["window_open"]      = True
+    state["last_invite_date"] = datetime.now(BOSTON_TZ).strftime("%Y-%m-%d")
     save_state(state)
 
     # date strings for the message (Boston time, handles EDT/EST automatically)
@@ -432,8 +433,9 @@ def auto():
     state = load_state()
 
     if day == 0 and 8 <= hour < 16:
-        if state["window_open"] or state["current_post_ts"]:
-            logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → already invited, poll")
+        today_str = now.strftime("%Y-%m-%d")
+        if state.get("last_invite_date") == today_str:
+            logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → already invited today, poll")
             poll()
         else:
             logger.info(f"Auto: Monday {now.strftime('%I:%M %p %Z')} → invite")
