@@ -1,13 +1,32 @@
 {
   "current_post_ts": "1790611951.517939",
-  "signups": [],
+  "signups": [
+    {
+      "user_id": "U01NGU383D3",
+      "display_name": "Jack Gabel",
+      "ts": "1790612099.229539"
+    },
+    {
+      "user_id": "U040EG95ULU",
+      "display_name": "Gabriel Stine",
+      "ts": "1790613075.241299"
+    },
+    {
+      "user_id": "U03HTFJPQDT",
+      "display_name": "Meghana Potta",
+      "ts": "1790613605.849639"
+    }
+  ],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
     "W01BBRCFPV2": "2026-09",
     "U07BC3HK63T": "2026-09",
     "U0B42B2MRCP": "2026-09",
-    "U0BMHCPCL1M": "2026-09"
+    "U0BMHCPCL1M": "2026-09",
+    "U01NGU383D3": "2026-09",
+    "U040EG95ULU": "2026-09",
+    "U03HTFJPQDT": "2026-09"
   },
   "seen_ts": [
     "1789403082.609489",
@@ -15,9 +34,12 @@
     "1789404121.787449",
     "1790016118.271149",
     "1790079250.182579",
-    "1790079252.101579"
+    "1790079252.101579",
+    "1790612099.229539",
+    "1790613075.241299",
+    "1790613605.849639"
   ],
-  "window_open": true,
+  "window_open": false,
   "history": [
     {
       "date": "2026-09-14",
@@ -33,6 +55,14 @@
         "Zoe Boundy-Singer",
         "Srinidhi Naidu",
         "Braden Yuille"
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "members": [
+        "Jack Gabel",
+        "Gabriel Stine",
+        "Meghana Potta"
       ]
     }
   ],
