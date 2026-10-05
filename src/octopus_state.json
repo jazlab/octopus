@@ -1,22 +1,6 @@
 {
-  "current_post_ts": "1790611951.517939",
-  "signups": [
-    {
-      "user_id": "U01NGU383D3",
-      "display_name": "Jack Gabel",
-      "ts": "1790612099.229539"
-    },
-    {
-      "user_id": "U040EG95ULU",
-      "display_name": "Gabriel Stine",
-      "ts": "1790613075.241299"
-    },
-    {
-      "user_id": "U03HTFJPQDT",
-      "display_name": "Meghana Potta",
-      "ts": "1790613605.849639"
-    }
-  ],
+  "current_post_ts": "1791218006.501859",
+  "signups": [],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
@@ -39,7 +23,7 @@
     "1790613075.241299",
     "1790613605.849639"
   ],
-  "window_open": false,
+  "window_open": true,
   "history": [
     {
       "date": "2026-09-14",
@@ -66,5 +50,5 @@
       ]
     }
   ],
-  "last_invite_date": "2026-09-28"
+  "last_invite_date": "2026-10-05"
 }
