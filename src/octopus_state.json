@@ -1,6 +1,22 @@
 {
   "current_post_ts": "1791218006.501859",
-  "signups": [],
+  "signups": [
+    {
+      "user_id": "W01145DTHS6",
+      "display_name": "Nikasha Patel",
+      "ts": "1791218026.910549"
+    },
+    {
+      "user_id": "W010RT6URHP",
+      "display_name": "Nicholas Watters",
+      "ts": "1791218403.645709"
+    },
+    {
+      "user_id": "U0B4MD0F760",
+      "display_name": "Marisol Espinoza Monroy",
+      "ts": "1791218419.615519"
+    }
+  ],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
@@ -10,7 +26,10 @@
     "U0BMHCPCL1M": "2026-09",
     "U01NGU383D3": "2026-09",
     "U040EG95ULU": "2026-09",
-    "U03HTFJPQDT": "2026-09"
+    "U03HTFJPQDT": "2026-09",
+    "W01145DTHS6": "2026-10",
+    "W010RT6URHP": "2026-10",
+    "U0B4MD0F760": "2026-10"
   },
   "seen_ts": [
     "1789403082.609489",
@@ -21,9 +40,12 @@
     "1790079252.101579",
     "1790612099.229539",
     "1790613075.241299",
-    "1790613605.849639"
+    "1790613605.849639",
+    "1791218026.910549",
+    "1791218403.645709",
+    "1791218419.615519"
   ],
-  "window_open": true,
+  "window_open": false,
   "history": [
     {
       "date": "2026-09-14",
@@ -47,6 +69,14 @@
         "Jack Gabel",
         "Gabriel Stine",
         "Meghana Potta"
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "members": [
+        "Nikasha Patel",
+        "Nicholas Watters",
+        "Marisol Espinoza Monroy"
       ]
     }
   ],
