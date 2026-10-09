@@ -11,6 +11,7 @@ Commands (called by GitHub Actions):
   invite  — Post the weekly lunch offer
   poll    — Check for new sign-ups, enforce rules
   close   — Close the window, confirm or quietly drop
+  ping    — Smoke test: DM the user named in $PING_USER (name or Slack ID)
 """
 
 import os
@@ -449,6 +450,36 @@ def auto():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PING — smoke test, touches no state
+# ══════════════════════════════════════════════════════════════════════════════
+
+def ping():
+    target = os.environ.get("PING_USER", "").strip()
+    if not target:
+        raise SystemExit("ping: set PING_USER to a Slack user ID or full name")
+
+    user_id = target if re.fullmatch(r"[UW][A-Z0-9]+", target) else None
+    cursor = None
+    while user_id is None:
+        resp = slack.users_list(cursor=cursor, limit=200)
+        for u in resp["members"]:
+            names = {u.get("real_name", ""), u.get("profile", {}).get("display_name", ""), u.get("name", "")}
+            if target.lower() in {n.lower() for n in names if n}:
+                user_id = u["id"]
+                break
+        cursor = resp.get("response_metadata", {}).get("next_cursor")
+        if user_id is None and not cursor:
+            raise SystemExit(f"ping: no Slack user matching '{target}'")
+
+    now = datetime.now(BOSTON_TZ).strftime("%a %b %d %I:%M %p %Z")
+    slack.chat_postMessage(
+        channel=user_id,
+        text=f"🐙 Octopus smoke test ({now}): checkout + Slack auth OK."
+    )
+    logger.info(f"Ping sent to {user_id}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # ENTRY POINTS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -459,6 +490,7 @@ if __name__ == "__main__":
         "invite": send_weekly_invitation,
         "poll":   poll,
         "close":  close_window,
+        "ping":   ping,
     }
     command = sys.argv[1] if len(sys.argv) > 1 else ""
     if command in commands:

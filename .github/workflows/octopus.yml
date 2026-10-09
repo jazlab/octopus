@@ -11,13 +11,21 @@ on:
   workflow_dispatch:
     inputs:
       command:
-        description: "Command: auto | invite | poll | close"
+        description: "Command: auto | invite | poll | close | ping"
         required: true
         default: "auto"
+      ping_user:
+        description: "For ping: Slack user ID or full name to DM"
+        required: false
+        default: ""
 
 jobs:
   octopus:
     runs-on: ubuntu-latest
+
+    # Built-in token for checkout + state push; never expires (replaces GH_PAT)
+    permissions:
+      contents: write
 
     concurrency:
       group: octopus
@@ -25,12 +33,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -51,6 +57,7 @@ jobs:
           SLACK_BOT_TOKEN:      ${{ secrets.SLACK_BOT_TOKEN }}
           PI_SLACK_USER_ID:     ${{ secrets.PI_SLACK_USER_ID }}
           KATIE_SLACK_USER_ID:  ${{ secrets.KATIE_SLACK_USER_ID }}
+          PING_USER:            ${{ github.event.inputs.ping_user }}
         run: |
           cd src
           python octopus.py ${{ steps.cmd.outputs.command }}

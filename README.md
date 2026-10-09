@@ -60,14 +60,9 @@ You need two Slack member IDs:
 
 ---
 
-### 3. Create a GitHub Personal Access Token (PAT)
+### 3. State-file permissions (nothing to do)
 
-Octopus saves its state (who signed up, monthly lockouts) to a file in the repo after each run. It needs permission to do that.
-
-1. Go to GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
-2. Set repository access to the **Jazlab GitHub repo** only.
-3. Under **Repository permissions**, set **Contents** to **Read and write**.
-4. Copy the token. This is your `GH_PAT`.
+Octopus commits its state file back to the repo after each run using GitHub's built-in `GITHUB_TOKEN` (`permissions: contents: write` in the workflow). No personal access token is needed, and nothing expires.
 
 ---
 
@@ -82,7 +77,6 @@ Add each of these:
 | `SLACK_BOT_TOKEN` | From Step 1 — starts with `xoxb-` |
 | `PI_SLACK_USER_ID` | From Step 2 |
 | `KATIE_SLACK_USER_ID` | From Step 2 |
-| `GH_PAT` | From Step 3 |
 
 ---
 
@@ -151,6 +145,8 @@ octopus/
 **New lab member** — just invite them to `#octopus`. The bot discovers members automatically.
 
 **Something broke** — check the **Actions tab** in GitHub. Each run shows complete logs. Most failures will be a missing or expired secret.
+
+**Smoke test** — Actions → **Octopus 🐙** → **Run workflow** → command `ping`, `ping_user` = your full Slack name. The bot DMs you without touching state.
 
 **Changing the lunch budget** — edit the `LUNCH_BUDGET = 20` line near the top of `octopus.py`.
 
