@@ -1,22 +1,6 @@
 {
-  "current_post_ts": "1791218006.501859",
-  "signups": [
-    {
-      "user_id": "W01145DTHS6",
-      "display_name": "Nikasha Patel",
-      "ts": "1791218026.910549"
-    },
-    {
-      "user_id": "W010RT6URHP",
-      "display_name": "Nicholas Watters",
-      "ts": "1791218403.645709"
-    },
-    {
-      "user_id": "U0B4MD0F760",
-      "display_name": "Marisol Espinoza Monroy",
-      "ts": "1791218419.615519"
-    }
-  ],
+  "current_post_ts": "1791821767.964549",
+  "signups": [],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
@@ -45,7 +29,7 @@
     "1791218403.645709",
     "1791218419.615519"
   ],
-  "window_open": false,
+  "window_open": true,
   "history": [
     {
       "date": "2026-09-14",
@@ -80,5 +64,5 @@
       ]
     }
   ],
-  "last_invite_date": "2026-10-05"
+  "last_invite_date": "2026-10-12"
 }
