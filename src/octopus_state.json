@@ -1,12 +1,6 @@
 {
-  "current_post_ts": "1791821767.964549",
-  "signups": [
-    {
-      "user_id": "W01BBRCFPV2",
-      "display_name": "Ruidong Chen",
-      "ts": "1791824269.713379"
-    }
-  ],
+  "current_post_ts": "1792425569.744589",
+  "signups": [],
   "monthly_lunchers": {
     "U01V6FFGHPZ": "2026-09",
     "U05H71F1J3E": "2026-09",
@@ -36,7 +30,7 @@
     "1791218419.615519",
     "1791824269.713379"
   ],
-  "window_open": false,
+  "window_open": true,
   "history": [
     {
       "date": "2026-09-14",
@@ -71,5 +65,5 @@
       ]
     }
   ],
-  "last_invite_date": "2026-10-12"
+  "last_invite_date": "2026-10-19"
 }
