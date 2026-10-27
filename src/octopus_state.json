@@ -27,7 +27,9 @@
     "U0B4MD0F760": "2026-10",
     "U03F3EGR3BL": "2026-10",
     "W011DGGP7KQ": "2026-10",
-    "U08SNK2GVB4": "2026-10"
+    "U08SNK2GVB4": "2026-10",
+    "U02366JMJAY": "2026-10",
+    "U09FQ06R8KB": "2026-10"
   },
   "seen_ts": [
     "1789403082.609489",
@@ -49,7 +51,7 @@
     "1793037157.132469",
     "1793037577.691759"
   ],
-  "window_open": true,
+  "window_open": false,
   "history": [
     {
       "date": "2026-09-14",
@@ -89,6 +91,13 @@
         "Ho Kyung Sung",
         "A\u00edda Piccato",
         "Oluwagbemiga Odebode"
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "members": [
+        "Jack King",
+        "Amin Fakharian"
       ]
     }
   ],
